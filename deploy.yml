@@ -1,0 +1,24 @@
+---
+- name: "Apache install docker"
+  hosts: prod
+  become: true
+  vars:
+    ansible_sudo_pass: admin
+  pre_tasks:
+    - name: Install EPEL repo
+      package: name=epel-release  state=present
+    - name: download pip script
+      get_url:
+        url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+        dest: /tmp/get-pip.py
+    - name: install python-pip
+      command: python2.7 /tmp/get-pip.py
+    - name: install python-pip
+      pip: name=docker-py
+  tasks:
+    - name: Create a Appache  container
+      docker_container:
+        name: webapp
+        image: nginx
+        ports:
+          - "80:80"
